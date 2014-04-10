@@ -119,3 +119,18 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
+
+// Added by the Spring Security Core plugin:
+grails.plugins.springsecurity.userLookup.userDomainClassName = 'bookstore.User'
+grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'bookstore.UserRole'
+grails.plugins.springsecurity.authority.className = 'bookstore.Role'
+
+
+// Added by the MultiTenant plugin
+// TODO: Verify that this is correct
+multiTenant {
+    tenantClass = bookstore.User
+}
+
+
+

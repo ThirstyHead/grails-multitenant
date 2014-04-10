@@ -1,0 +1,138 @@
+notes.txt
+2014-04-10
+shd
+
+http://grails.org/plugin/multi-tenant-single-db
+http://multi-tenant.github.io/grails-multi-tenant-single-db/docs/v0.8.3/guide/
+http://grails.org/plugin/spring-security-core
+
+
+
+1. Install Multi-Tenant plugin
+-------------------------------
+Add this to BuildConfig.groovy 
+plugins{
+  compile ":multi-tenant-single-db:0.8.3"  
+}
+
+//to trigger download + installation
+$ grails compile
+
+*********************************************************
+* You've installed the Multi Tenant Single DB plugin.   *
+*                                                       *
+* The plugin requires some additional steps to enable   *
+* multi tenant behavior.                                *
+*                                                       *
+* Run the "mt-quickstart" script to initialize a simple *
+*     tenant, repository and resolver.                  *
+* Or, run the "mt-spring-security" script to generate a *
+*     tenant, repository and resolver that work with    *
+*     the spring-security-core plugin.                  *
+*                                                       *
+*********************************************************
+
+NOTE: Don't run 'grails mt-quickstart' or 
+'grails mt-spring-security' yet -- we'll do that after we 
+install Spring Security.
+
+
+
+2. Install Spring Security plugin
+-----------------------------------
+Add this to BuildConfig.groovy 
+plugins{
+  compile ":spring-security-core:1.2.7.3"
+}
+
+
+
+//to trigger download + installation
+$ grails compile
+
+*******************************************************
+* You've installed the Spring Security Core plugin.   *
+*                                                     *
+* Next run the "s2-quickstart" script to initialize   *
+* Spring Security and create your domain classes.     *
+*                                                     *
+*******************************************************
+
+$ grails s2-quickstart
+Usage: grails s2-quickstart <domain-class-package> <user-class-name> <role-class-name> [requestmap-class-name]
+
+Creates a user and role class (and optionally a requestmap class) in the specified package
+
+Example: grails s2-quickstart com.yourapp User Role
+Example: grails s2-quickstart com.yourapp Person Authority Requestmap
+
+
+
+
+$ grails s2-quickstart bookstore User Role
+
+*******************************************************
+* Created domain classes, controllers, and GSPs. Your *
+* grails-app/conf/Config.groovy has been updated with *
+* the class names of the configured domain classes;   *
+* please verify that the values are correct.          *
+*******************************************************
+
+
+At the end of Config.groovy:
+// Added by the Spring Security Core plugin:
+grails.plugins.springsecurity.userLookup.userDomainClassName = 'bookstore.User'
+grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'bookstore.UserRole'
+grails.plugins.springsecurity.authority.className = 'bookstore.Role'
+
+
+
+
+
+3. Bootstrap Multi-Tenant
+----------------------------
+$ grails mt-spring-security
+
+Usage: grails mt-spring-security <package> <tenant-domain-class-name>
+
+This script will generate
+ * A tenant resolver that integrates with Spring Securty
+ * Domain class to represent tenants
+ * A tenant repository implementation that integrates with Spring Security
+
+Example: grails mt-spring-security com.yourapp Customer
+
+
+
+NOTE: Copy your grails-app/domain/bookstore/User.groovy file
+off to the side
+$ grails mt-spring-security bookstore User
+
+> /Users/scott/code/local/grails-multitenant/bookstore/src/groovy/bookstore/SpringSecurityTenantResolver.groovy exists, ok to overwrite?[y,n,a] y
+| Created a Spring Security implementation of TenantResolver: /Users/scott/code/local/grails-multitenant/bookstore/src/groovy/bookstore/SpringSecurityTenantResolver.groovy
+> /Users/scott/code/local/grails-multitenant/bookstore/grails-app/domain/bookstore/User.groovy exists, ok to overwrite?[y,n,a] y
+| Created a tenant domain class: /Users/scott/code/local/grails-multitenant/bookstore/grails-app/domain/bookstore/User.groovy
+> /Users/scott/code/local/grails-multitenant/bookstore/src/groovy/bookstore/SpringSecurityTenantRepository.groovy exists, ok to overwrite?[y,n,a] y
+| Created a Spring Security implementation of TenantRepository: /Users/scott/code/local/grails-multitenant/bookstore/src/groovy/bookstore/SpringSecurityTenantRepository.groovy
+| --------------------- IMPORTANT ---------------------
+| I've added some lines to: /Users/scott/code/local/grails-multitenant/bookstore/grails-app/conf/spring/resources.groovy
+| Open it and follow the instructions added to the bottom of file
+
+| --------------------- IMPORTANT ---------------------
+| I've added some lines to: /Users/scott/code/local/grails-multitenant/bookstore/grails-app/conf/Config.groovy
+| Open it and follow the instructions added to the bottom of file
+
+| --------------------- IMPORTANT ---------------------
+| You must update your Spring Security User domain
+| You need to add 'Integer userTenantId' as a field
+
+
+
+Edit grails-multitenant/bookstore/grails-app/conf/spring/resources.groovy
+
+Edit grails-multitenant/bookstore/grails-app/conf/Config.groovy
+
+
+
+
+
